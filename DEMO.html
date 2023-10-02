@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Template</title>
+</head>
+<body>
+    <h1>Choose a Category:</h1>
+    <select id="categoryDropdown" onchange="showForm()">
+        <option value="">Select a Category</option>
+        <option value="நாட்டுடைமைநூல்">நாட்டுடைமைநூல்</option>
+        <option value="தகவல்பெட்டி புத்தகம்">தகவல்பெட்டி புத்தகம்</option>
+        <option value="Infobox officeholder">Infobox officeholder</option>
+        <option value="Infobox school">Infobox school</option>
+    </select>
+
+    <div id="formContainer">
+        <!-- Forms for entering details will be displayed here -->
+    </div>
+
+    <div id="detailsContainer">
+        <!-- Entered details will be displayed here -->
+    </div>
+
+    <script>
+        const categories = {
+            
+            'நாட்டுடைமைநூல்': [
+                'ஆசிரியர்',
+                'வெளியீட்டாளர்',
+                'வெளியீட்டாண்டு',
+                'பக்கங்கள்'
+            ],
+            'தகவல்பெட்டி புத்தகம்': [
+                'நூலாசிரியர்',
+                'குரல்கொடுத்தவர்',
+                'உண்மையானதலைப்பு',
+                'செயற்பாட்டிலுள்ளதலைப்பு',
+                'மொழிபெயர்ப்பாளர்',
+                'படவரைஞர்',
+                'நாடு',
+                'மொழி',
+                'வெளியீட்டுஎண்',
+                'பொருண்மை',
+                'வெளியிடப்பட்டது',
+                'வெளியீட்டாளர்',
+                'வெளியிடப்பட்டநாள்',
+                'ஆங்கிலவெளியீடு',
+                'வெளியிடப்பட்டவரின் வயது',
+                'பக்கங்கள்'
+            ],
+            'Infobox officeholder': [
+                'அரசர்',
+                'குடியரசுத் தலைவர்',
+                'தலைமை ஆளுநர்',
+                'பிரதமர்',
+                'வேந்தர்',
+                'ஆளுநர்',
+                'துணை குடியரசுத் தலைவர்',
+                'துணை பிரதமர்',
+                'துணை',
+                'முன்னவர்',
+                'தொகுதி',
+                'பெரும்பான்மை',
+            ],
+            'Infobox school': [
+                'name',
+                'native_name',
+                'latin_name',
+                'logo',
+                'logo_size',
+                'logo_alt',
+                'seal_image',
+                'seal_size',
+                'seal_alt',
+                'image',
+                'image_size',
+                'alt',
+                'caption',
+                'motto',
+                'motto_translation',
+                'address',
+                'location',
+                'region',
+                'city',
+                'county',
+                'state',
+                'province',
+                'postcode',
+                'zipcode',
+                'country',
+                'country1',
+                'coordinates',
+                'coordinates_footnotes',
+                'pushpin_map',
+                'pushpin_image',
+                'pushpin_mapsize',
+                'pushpin_map_alt',
+                'pushpin_map_caption',
+                'pushpin_label',
+                'pushpin_label_position',
+                'other_name',
+                'former_name',
+                'schooltype',
+                'fundingtype',
+                'type',
+                'religious_affiliation',
+                'denomination',
+                'patron',
+                'established',
+                'founded',
+                'status',
+                'closed',
+                'locale',
+                'sister_school',
+                'school_board',
+                'district',
+                'us_nces_district_id',
+                'local_authority',
+                'educational_authority',
+                'category',
+                'oversight',
+                'trust',
+                'authorizer',
+                'superintendent',
+                'trustee',
+                'specialist',
+                'session',
+                'school_number',
+                'school_code',
+            ]
+        };
+
+        function createForm(category) {
+            const formContainer = document.getElementById('formContainer');
+            const fields = categories[category];
+            const form = document.createElement('form');
+            form.onsubmit = function(event) {
+                submitForm(event, category, fields);
+            };
+
+            for (const field of fields) {
+                const label = document.createElement('label');
+                label.textContent = field + ':';
+                const input = document.createElement('input');
+                if (field.includes('வெளிடியாக்கப்பட்டநாள்') || field.includes('வயது')) {
+                    input.type = 'date'; // Use calendar input for date and year fields
+                } else {
+                    input.type = 'text';
+                    if (field !== 'வெளிடியாக்கப்பட்டநாள்' && field !== 'school_number' && field !== 'school_code') {
+                        input.pattern = '[A-Za-z]+'; // Allow only letters for string fields
+                    }
+                }
+                input.id = field;
+                form.appendChild(label);
+                form.appendChild(input);
+                form.appendChild(document.createElement('br'));
+            }
+
+            const submitButton = document.createElement('button');
+            submitButton.type = 'submit';
+            submitButton.textContent = 'Submit';
+            form.appendChild(submitButton);
+
+            formContainer.innerHTML = '';
+            formContainer.appendChild(form);
+        }
+
+        function showForm() {
+            const dropdown = document.getElementById('categoryDropdown');
+            const selectedCategory = dropdown.value;
+            if (selectedCategory) {
+                createForm(selectedCategory);
+            } else {
+                document.getElementById('formContainer').innerHTML = '';
+                document.getElementById('detailsContainer').innerHTML = '';
+            }
+        }
+
+        function submitForm(event, category, fields) {
+            event.preventDefault();
+            const detailsContainer = document.getElementById('detailsContainer');
+            let detailsHTML = `<h2>${category} Details</h2>`;
+            let hasInvalidValue = false; // Track if there's any invalid value
+
+            for (const field of fields) {
+                const value = document.getElementById(field).value;
+                if (field !== 'வெளிடியாக்கப்பட்டநாள்' && field !== 'school_number' && field !== 'school_code') {
+                    if (!/^[A-Za-z]+$/.test(value)) {
+                        alert(`Invalid format for ${field}. Please use only letters.`);
+                        hasInvalidValue = true;
+                        break;
+                    }
+                } else {
+                    if (!/^\d+$/.test(value)) {
+                        alert(`Invalid format for ${field}. Please enter a valid integer.`);
+                        hasInvalidValue = true;
+                        break;
+                    }
+                }
+                detailsHTML += `<p>${field}: ${value}</p>`;
+            }
+
+            if (!hasInvalidValue) {
+                detailsContainer.innerHTML = detailsHTML;
+            }
+        }
+    </script>
+</body>
+</html>
